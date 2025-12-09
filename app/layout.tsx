@@ -7,8 +7,9 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { MobileNav } from "@/components/nav/mobile-nav";
 import { Analytics } from "@vercel/analytics/react";
 import { Button } from "@/components/ui/button";
+import { CartProvider, CartDrawer } from "@/components/shop";
 
-import { mainMenu, contentMenu } from "@/menu.config";
+import { mainMenu, contentMenu, shopMenu } from "@/menu.config";
 import { siteConfig } from "@/site.config";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +18,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { Metadata } from "next";
+
+interface NavProps {
+  className?: string;
+  children?: React.ReactNode;
+  id?: string;
+}
 
 const font = FontSans({
   subsets: ["latin"],
@@ -48,9 +55,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Nav />
-          {children}
-          <Footer />
+          <CartProvider>
+            <Nav />
+            {children}
+            <Footer />
+          </CartProvider>
         </ThemeProvider>
         <Analytics />
       </body>
@@ -93,9 +102,7 @@ const Nav = ({ className, children, id }: NavProps) => {
               </Button>
             ))}
           </div>
-          <Button asChild className="hidden sm:flex">
-            <Link href="https://dub.sh/next-wp">Get Started</Link>
-          </Button>
+          <CartDrawer />
           <MobileNav />
         </div>
       </div>

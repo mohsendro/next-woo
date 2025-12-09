@@ -67,6 +67,43 @@ export async function POST(request: NextRequest) {
           revalidateTag(`author-${contentId}`, { expire: 0 });
         }
       }
+      // WooCommerce content types
+      else if (contentType === "product") {
+        revalidateTag("woocommerce", { expire: 0 });
+        revalidateTag("products", { expire: 0 });
+        if (contentId) {
+          revalidateTag(`product-${contentId}`, { expire: 0 });
+        }
+        revalidateTag("products-page-1", { expire: 0 });
+        revalidateTag("products-featured", { expire: 0 });
+        revalidateTag("products-sale", { expire: 0 });
+      } else if (contentType === "product_cat") {
+        revalidateTag("woocommerce", { expire: 0 });
+        revalidateTag("categories", { expire: 0 });
+        if (contentId) {
+          revalidateTag(`category-${contentId}`, { expire: 0 });
+          revalidateTag(`products-category-${contentId}`, { expire: 0 });
+        }
+      } else if (contentType === "product_tag") {
+        revalidateTag("woocommerce", { expire: 0 });
+        revalidateTag("tags", { expire: 0 });
+        if (contentId) {
+          revalidateTag(`products-tag-${contentId}`, { expire: 0 });
+        }
+      } else if (contentType === "order") {
+        revalidateTag("woocommerce", { expire: 0 });
+        revalidateTag("orders", { expire: 0 });
+        if (contentId) {
+          revalidateTag(`order-${contentId}`, { expire: 0 });
+        }
+      } else if (contentType === "stock_update") {
+        // Product stock was updated - revalidate product pages
+        revalidateTag("woocommerce", { expire: 0 });
+        revalidateTag("products", { expire: 0 });
+        if (contentId) {
+          revalidateTag(`product-${contentId}`, { expire: 0 });
+        }
+      }
 
       // Also revalidate the entire layout for safety
       revalidatePath("/", "layout");

@@ -20,10 +20,21 @@ Headless WordPress starter using Next.js 16 App Router with TypeScript.
 - Pagination via `getPostsPaginated()` returns `{ data, headers: { total, totalPages } }`
 - Default cache: 1 hour (`revalidate: 3600`)
 
+### WooCommerce Data Layer (`lib/woocommerce.ts`)
+- WooCommerce REST API v3 integration with consumer key/secret auth
+- Type definitions in `lib/woocommerce.d.ts` (Product, ProductVariation, Order, Cart, Customer, etc.)
+- `WooCommerceAPIError` class for consistent error handling
+- Cache tags: `['woocommerce', 'products', 'product-{id}', 'categories', 'orders']`
+- Key functions: `getProducts()`, `getProductBySlug()`, `getProductVariations()`, `createOrder()`
+- Utility functions: `formatPrice()`, `isProductInStock()`, `calculateDiscountPercentage()`
+
 ### Routing
 - Dynamic: `/posts/[slug]`, `/pages/[slug]`
 - Archives: `/posts`, `/posts/authors`, `/posts/categories`, `/posts/tags`
-- API: `/api/revalidate` (webhook), `/api/og` (OG images)
+- Shop: `/shop`, `/shop/[slug]`, `/shop/category/[slug]`
+- Cart/Checkout: `/cart`, `/checkout`, `/checkout/success`
+- Account: `/account`, `/account/orders`, `/account/orders/[id]`
+- API: `/api/revalidate` (webhook), `/api/og` (OG images), `/api/checkout` (order creation)
 
 ### Data Fetching Patterns
 - Server Components with parallel `Promise.all()` calls
@@ -35,6 +46,13 @@ Headless WordPress starter using Next.js 16 App Router with TypeScript.
 1. WordPress plugin sends webhook to `/api/revalidate`
 2. Validates `x-webhook-secret` header against `WORDPRESS_WEBHOOK_SECRET`
 3. Calls `revalidateTag()` for specific content types (posts, categories, tags, authors)
+4. WooCommerce content types: product, product_cat, product_tag, order, stock_update
+
+### Cart System
+- Client-side cart with localStorage persistence (`CartProvider` context)
+- `useCart()` hook provides: `cart`, `addItem()`, `removeItem()`, `updateQuantity()`, `clearCart()`
+- `CartDrawer` component for slide-out cart preview
+- Cart state: items array with `{ productId, variationId?, quantity, name, price, image }`
 
 ### Configuration Files
 - `site.config.ts` - Site metadata (domain, name, description)
@@ -56,6 +74,7 @@ Headless WordPress starter using Next.js 16 App Router with TypeScript.
 - Pages: `/app/**/*.tsx`
 - UI components: `/components/ui/*.tsx` (shadcn/ui)
 - Feature components: `/components/posts/*.tsx`, `/components/theme/*.tsx`
+- Shop components: `/components/shop/*.tsx` (ProductCard, ProductGallery, CartProvider, etc.)
 - WordPress functions must include cache tags
 
 ## Environment Variables
@@ -63,6 +82,14 @@ Headless WordPress starter using Next.js 16 App Router with TypeScript.
 WORDPRESS_URL="https://example.com"      # Full WordPress URL
 WORDPRESS_HOSTNAME="example.com"          # For Next.js image optimization
 WORDPRESS_WEBHOOK_SECRET="secret-key"     # Webhook validation
+
+# WooCommerce (required for shop functionality)
+WC_CONSUMER_KEY="ck_xxx"                  # WooCommerce REST API consumer key
+WC_CONSUMER_SECRET="cs_xxx"               # WooCommerce REST API consumer secret
+
+# Optional: Payment integration
+STRIPE_PUBLISHABLE_KEY="pk_xxx"           # Stripe publishable key
+STRIPE_SECRET_KEY="sk_xxx"                # Stripe secret key
 ```
 
 ## Key Dependencies
