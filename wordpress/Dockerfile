@@ -5,10 +5,6 @@ LABEL org.opencontainers.image.source="https://github.com/9d8dev/next-woo"
 LABEL org.opencontainers.image.description="WordPress with WooCommerce for headless Next.js"
 LABEL org.opencontainers.image.licenses="MIT"
 
-# Fix Apache MPM conflict
-RUN a2dismod mpm_event 2>/dev/null || true \
-    && a2enmod mpm_prefork
-
 # Install WP-CLI
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
     && chmod +x wp-cli.phar \
@@ -21,7 +17,8 @@ COPY theme /usr/src/nextjs-headless
 # Copy the setup scripts
 COPY setup.sh /usr/local/bin/setup-wordpress.sh
 COPY entrypoint.sh /usr/local/bin/custom-entrypoint.sh
-RUN chmod +x /usr/local/bin/setup-wordpress.sh /usr/local/bin/custom-entrypoint.sh
+COPY apache2-foreground-wrapper.sh /usr/local/bin/apache2-foreground-wrapper.sh
+RUN chmod +x /usr/local/bin/setup-wordpress.sh /usr/local/bin/custom-entrypoint.sh /usr/local/bin/apache2-foreground-wrapper.sh
 
 ENTRYPOINT ["/usr/local/bin/custom-entrypoint.sh"]
-CMD ["apache2-foreground"]
+CMD ["apache2-foreground-wrapper.sh"]
