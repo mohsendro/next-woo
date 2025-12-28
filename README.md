@@ -52,17 +52,68 @@ Instead of building custom Stripe integration and authentication:
 
 ## Setup
 
-### Step 1: Clone & Install
+### Prerequisites
+
+- **WordPress 6.0+** with HTTPS enabled
+- **WooCommerce 8.0+** installed and activated
+- **Node.js 18+** and pnpm
+
+### Step 1: WordPress Setup
+
+If you don't have a WordPress site yet:
+
+1. **Hosting**: Use any WordPress host (WP Engine, Bluehost, Cloudways, etc.) or local development (Local by Flywheel, MAMP, Docker)
+2. **Install WordPress**: Follow your host's WordPress installation process
+3. **Enable HTTPS**: Required for WooCommerce API authentication
+
+#### Configure Permalinks
+
+**Important:** The REST API requires pretty permalinks.
+
+1. Go to **Settings → Permalinks**
+2. Select **Post name** (or any option except "Plain")
+3. Click **Save Changes**
+
+### Step 2: WooCommerce Setup
+
+1. Install WooCommerce: **Plugins → Add New → Search "WooCommerce"**
+2. Activate and run the setup wizard
+3. Configure your store basics (currency, location, etc.)
+
+#### Required WooCommerce Pages
+
+WooCommerce creates these automatically, but verify they exist:
+
+- **Shop** (`/shop`) - Product listing
+- **Cart** (`/cart`) - Shopping cart
+- **Checkout** (`/checkout`) - Payment page
+- **My Account** (`/my-account`) - Customer login/dashboard
+
+Check in **WooCommerce → Settings → Advanced → Page Setup**.
+
+#### Add Products
+
+1. Go to **Products → Add New**
+2. Add product title, description, price, and images
+3. Set stock status and publish
+4. Repeat or import products via **Products → Import**
+
+### Step 3: WooCommerce API Credentials
+
+1. Go to **WooCommerce → Settings → Advanced → REST API**
+2. Click **Add Key**
+3. Set **Description** to "Next.js" (or any label)
+4. Set **User** to an admin account
+5. Set **Permissions** to **Read/Write**
+6. Click **Generate API Key**
+7. **Copy both keys immediately** - the secret is only shown once
+
+### Step 4: Clone & Configure Next.js
 
 ```bash
 git clone https://github.com/9d8dev/next-woo.git
 cd next-woo
 pnpm install
-```
-
-### Step 2: Environment Variables
-
-```bash
 cp .env.example .env.local
 ```
 
@@ -77,42 +128,53 @@ NEXT_PUBLIC_WORDPRESS_URL="https://your-wordpress-site.com"
 # Webhook secret (generate with: openssl rand -base64 32)
 WORDPRESS_WEBHOOK_SECRET="your-secret-key-here"
 
-# WooCommerce API (Step 3)
+# WooCommerce API credentials from Step 3
 WC_CONSUMER_KEY="ck_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 WC_CONSUMER_SECRET="cs_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 ```
 
-### Step 3: WooCommerce API Credentials
-
-1. Go to **WooCommerce → Settings → Advanced → REST API**
-2. Click **Add Key**
-3. Set permissions to **Read/Write**
-4. Copy Consumer Key and Consumer Secret to `.env.local`
-
-### Step 4: Payment Gateway
+### Step 5: Payment Gateway
 
 Configure your payment gateway in **WooCommerce → Settings → Payments**.
 
-**Important:** Set the return URL to redirect back to your Next.js site after payment:
-```
-https://your-nextjs-site.com/checkout/success
-```
+Popular options:
+- **Stripe** - Credit cards (install Stripe plugin)
+- **PayPal** - PayPal checkout
+- **Cash on Delivery** - For testing
 
-### Step 5: Revalidation Plugin (Optional)
+#### Configure Return URL
 
-For automatic cache updates when products change:
+After payment, customers should return to your Next.js site:
 
-1. Download [next-revalidate.zip](https://github.com/9d8dev/next-wp/releases/latest/download/next-revalidate.zip)
-2. Upload to WordPress via **Plugins → Add New → Upload**
-3. Configure in **Settings → Next.js Revalidation** with your Next.js URL and webhook secret
+1. Most payment gateways handle this automatically using the order's redirect URL
+2. If needed, configure the thank you page URL in your gateway settings:
+   ```
+   https://your-nextjs-site.com/checkout/success
+   ```
 
-### Step 6: Run Development Server
+### Step 6: Revalidation Plugin (Optional)
+
+For automatic cache updates when products/posts change:
+
+1. Download [next-revalidate.zip](https://github.com/9d8dev/next-woo/tree/main/plugin)
+2. Go to **Plugins → Add New → Upload Plugin**
+3. Upload and activate the plugin
+4. Go to **Settings → Next.js Revalidation**
+5. Enter your Next.js site URL and webhook secret
+
+### Step 7: Run Development Server
 
 ```bash
 pnpm dev
 ```
 
 Your site is now running at `http://localhost:3000`.
+
+#### Verify the Connection
+
+- Visit `http://localhost:3000/shop` - Should display your products
+- Visit `http://localhost:3000/posts` - Should display your blog posts
+- Test the cart and checkout flow
 
 ## Architecture
 
