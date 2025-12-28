@@ -87,13 +87,14 @@ Headless WordPress starter using Next.js 16 App Router with TypeScript.
 
 ## Environment Variables
 ```
-WORDPRESS_URL="https://example.com"      # Full WordPress URL
-WORDPRESS_HOSTNAME="example.com"          # For Next.js image optimization
-WORDPRESS_WEBHOOK_SECRET="secret-key"     # Webhook validation
+WORDPRESS_URL="https://example.com"           # Full WordPress URL
+WORDPRESS_HOSTNAME="example.com"              # For Next.js image optimization
+WORDPRESS_WEBHOOK_SECRET="secret-key"         # Webhook validation
+NEXT_PUBLIC_WORDPRESS_URL="https://example.com"  # Client-side WordPress URL (for My Account links)
 
 # WooCommerce (required for shop functionality)
-WC_CONSUMER_KEY="ck_xxx"                  # WooCommerce REST API consumer key
-WC_CONSUMER_SECRET="cs_xxx"               # WooCommerce REST API consumer secret
+WC_CONSUMER_KEY="ck_xxx"                      # WooCommerce REST API consumer key
+WC_CONSUMER_SECRET="cs_xxx"                   # WooCommerce REST API consumer secret
 ```
 
 Note: Payment processing is configured in WooCommerce admin, not in Next.js.
