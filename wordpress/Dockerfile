@@ -1,9 +1,13 @@
 FROM wordpress:latest
 
 # Labels for GitHub Container Registry
-LABEL org.opencontainers.image.source="https://github.com/9d8dev/next-wp"
-LABEL org.opencontainers.image.description="WordPress with next-revalidate plugin for headless Next.js"
+LABEL org.opencontainers.image.source="https://github.com/9d8dev/next-woo"
+LABEL org.opencontainers.image.description="WordPress with WooCommerce for headless Next.js"
 LABEL org.opencontainers.image.licenses="MIT"
+
+# Fix Apache MPM conflict
+RUN a2dismod mpm_event 2>/dev/null || true \
+    && a2enmod mpm_prefork
 
 # Install WP-CLI
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
