@@ -3,6 +3,7 @@ export const mainMenu = {
   home: "/",
   shop: "/shop",
   blog: "/posts",
+  plugin: "https://github.com/9d8dev/next-woo/tree/main/plugin",
   about: "https://github.com/9d8dev/next-wp",
 };
 
