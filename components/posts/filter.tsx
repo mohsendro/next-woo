@@ -7,23 +7,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"; // Ensure this is the correct import path
-import { Button } from "@/components/ui/button"; // Add this import for the Button component
-
-interface Author {
-  id: number;
-  name: string;
-}
-
-interface Tag {
-  id: number;
-  name: string;
-}
-
-interface Category {
-  id: number;
-  name: string;
-}
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import type { Author, Tag, Category } from "@/lib/wordpress.d";
 
 interface FilterPostsProps {
   authors: Author[];
@@ -45,9 +31,9 @@ export function FilterPosts({
   const router = useRouter();
 
   const handleFilterChange = (type: string, value: string) => {
-    console.log(`Filter changed: ${type} -> ${value}`);
     const newParams = new URLSearchParams(window.location.search);
     newParams.delete("page");
+    newParams.delete("search"); // Clear search when changing filters
     value === "all" ? newParams.delete(type) : newParams.set(type, value);
 
     router.push(`/posts?${newParams.toString()}`);

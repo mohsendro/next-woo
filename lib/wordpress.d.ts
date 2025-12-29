@@ -76,6 +76,7 @@ export interface Post extends WPEntity {
   categories: number[];
   tags: number[];
   meta: Record<string, unknown>;
+  _embedded?: PostEmbedded;
 }
 
 export interface Page extends WPEntity {
@@ -121,6 +122,37 @@ export interface Author {
   slug: string;
   avatar_urls: Record<string, string>;
   meta: Record<string, unknown>;
+}
+
+// Embedded types returned when using _embed=true parameter
+export interface EmbeddedAuthor {
+  id: number;
+  name: string;
+  url: string;
+  description: string;
+  link: string;
+  slug: string;
+  avatar_urls: Record<string, string>;
+}
+
+export interface EmbeddedFeaturedMedia {
+  id: number;
+  source_url: string;
+  alt_text: string;
+  media_details: MediaDetails;
+}
+
+export interface EmbeddedTerm {
+  id: number;
+  name: string;
+  slug: string;
+  link: string;
+}
+
+export interface PostEmbedded {
+  author?: EmbeddedAuthor[];
+  "wp:featuredmedia"?: EmbeddedFeaturedMedia[];
+  "wp:term"?: EmbeddedTerm[][]; // [0]=categories, [1]=tags
 }
 
 // Block types

@@ -3,26 +3,22 @@ import Link from "next/link";
 
 import { Post } from "@/lib/wordpress.d";
 import { cn } from "@/lib/utils";
+import { stripHtml, truncateText } from "@/lib/metadata";
 
-import {
-  getFeaturedMediaById,
-  getAuthorById,
-  getCategoryById,
-} from "@/lib/wordpress";
+export function PostCard({ post }: { post: Post }) {
+  // Extract from embedded data (no API calls needed!)
+  const media = post._embedded?.["wp:featuredmedia"]?.[0];
+  const category = post._embedded?.["wp:term"]?.[0]?.[0];
 
-export async function PostCard({ post }: { post: Post }) {
-  const media = post.featured_media
-    ? await getFeaturedMediaById(post.featured_media)
-    : null;
-  const author = post.author ? await getAuthorById(post.author) : null;
   const date = new Date(post.date).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
   });
-  const category = post.categories?.[0]
-    ? await getCategoryById(post.categories[0])
-    : null;
+
+  const excerpt = post.excerpt?.rendered
+    ? truncateText(stripHtml(post.excerpt.rendered), 80)
+    : "No excerpt available";
 
   return (
     <Link
@@ -54,15 +50,7 @@ export async function PostCard({ post }: { post: Post }) {
           }}
           className="text-xl text-primary font-medium group-hover:underline decoration-muted-foreground underline-offset-4 decoration-dotted transition-all"
         ></div>
-        <div
-          className="text-sm"
-          dangerouslySetInnerHTML={{
-            __html: post.excerpt?.rendered
-              ? post.excerpt.rendered.split(" ").slice(0, 12).join(" ").trim() +
-                "..."
-              : "No excerpt available",
-          }}
-        ></div>
+        <p className="text-sm">{excerpt}</p>
       </div>
 
       <div className="flex flex-col gap-4">
